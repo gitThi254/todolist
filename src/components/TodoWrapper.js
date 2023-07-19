@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import TodoForm from "./TodoForm";
 import { v4 as uuidv4 } from "uuid";
 import TodoList from "./TodoList";
@@ -7,7 +7,16 @@ import Alert from "./Alert";
 uuidv4();
 
 const TodoWrapper = () => {
-  const [todos, setTodos] = useState([]);
+  const [todos, setTodos] = useState(() => {
+    const localValue = localStorage.getItem("ITEMS");
+    if (localValue == null) return [];
+    return JSON.parse(localValue);
+  });
+
+  useEffect(() => {
+    localStorage.setItem("ITEMS", JSON.stringify(todos));
+  }, [todos]);
+
   const [alert, setAlert] = useState(null);
 
   const showAlert = (message) => {
@@ -45,7 +54,7 @@ const TodoWrapper = () => {
   const editTodo = (id) => {
     setTodos(
       todos.map((todo) =>
-        todo.id === id ? { ...todo, isEditing: !todo.todoEditing } : todo
+        todo.id === id ? { ...todo, isEditing: !todo.isEditing } : todo
       )
     );
   };
